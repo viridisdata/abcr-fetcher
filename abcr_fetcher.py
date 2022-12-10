@@ -64,7 +64,7 @@ def get_filename(link_metadata: dict) -> str:
 
 
 def fetch(dest_dir: Path):
-    client = httpx.Client()
+    client = httpx.Client(timeout=120)
     metadata = get_excel_file_link_metadata(client)
     url = metadata["url"]
     filename = get_filename(metadata)
