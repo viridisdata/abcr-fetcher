@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "abcr-fetcher"
-version = "0.1.0"
+version = "0.2.0"
 description = "Script to fetch Índie ABCR Excel file from ABCR website."
 authors = ["Daniel Komesu <danielkomesu@gmail.com>"]
 readme = "README.md"
