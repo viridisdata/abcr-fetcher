@@ -8,10 +8,9 @@ license = "MIT"
 packages = [{include = "abcr_fetcher.py"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-httpx = "^0.23.0"
-beautifulsoup4 = "^4.11.1"
-
+python = "*"
+httpx = "*"
+beautifulsoup4 = "*"
 
 [build-system]
 requires = ["poetry-core"]
