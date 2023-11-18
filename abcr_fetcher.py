@@ -6,13 +6,13 @@ import httpx
 from bs4 import BeautifulSoup
 
 
-def get_excel_file_link_metadata(client: httpx.Client) -> dict:
-    html_page_url = "https://abcr.org.br/indice/indice-abcr-do-mes"
+def get_excel_file_link_metadata(client: httpx.Client) -> dict[str, str]:
+    html_page_url = "https://melhoresrodovias.org.br/indice-abcr/"
     r = client.get(html_page_url)
     soup = BeautifulSoup(r.text, "html.parser")
     url = next(
         filter(
-            lambda a: a.text.strip() == "TABELA HISTÓRICA DO ÍNDICE",
+            lambda a: a.text.strip() == "Baixe o histórico do Índice",
             soup.select("a"),
         ),
     )["href"]
@@ -34,22 +34,23 @@ def get_excel_file_link_metadata(client: httpx.Client) -> dict:
 
 
 def fetch_file(
-    url: str,
+    link_metadata: dict[str, str],
     client: httpx.Client,
     dest_filepath: Path,
-) -> Path:
+):
     dest_filepath.parent.mkdir(parents=True, exist_ok=True)
+    url = link_metadata["url"]
     with client.stream("GET", url) as r:
-        content_length = int(r.headers.get("Content-Length", 0))
-        str_size = f"{content_length/1000000:5.2f} MB"
-        n = 0
+        size = int(r.headers.get("Content-Length", 0))
+        size_str = f"{size/1000000: >5.2f}"
         with dest_filepath.open("wb") as f:
+            n = 0
             for chunk in r.iter_bytes():
                 f.write(chunk)
                 n += len(chunk)
                 sys.stdout.write(
-                    f"Downloading file {dest_filepath.name} | "
-                    f"{n/1000000:5.2f} MB of {str_size}\r",
+                    f"Downloading file {dest_filepath.name} "
+                    f"{n/1000000: >5.2f} MB of {size_str} MB\r"
                 )
                 sys.stdout.flush()
     sys.stdout.write("\n")
@@ -75,9 +76,9 @@ def fetch(dest_dir: Path):
 
 
 def _cli():
-
     def get_args():
         import argparse
+
         parser = argparse.ArgumentParser()
         parser.add_argument("-o", "--output", type=Path, default=Path("data"))
         return parser.parse_args()
